@@ -9,7 +9,10 @@ initial = "section .text\n\
           \    mov [r8], al\n"
 
 final :: String
-final = "\nsection .bss\n\
+final = "\n    mov rax, 60\n\
+        \    mov rdi, 0\n\
+        \    syscall\n\n\
+        \section .bss\n\
         \    msg:    resb 1024"
 
 output :: String
