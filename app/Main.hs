@@ -1,5 +1,19 @@
 module Main where
 
+loopStart :: Show a => a -> String
+loopStart x = "\n.LOOP_" ++ y ++ ":\n"
+  ++ "    mov al, [r8]\n"
+  ++ "    cmp al, 0\n"
+  ++ "    jz .LOOP_" ++ y ++ "_EXIT"
+  where y = show x
+
+loopEnd :: Show a => a -> String
+loopEnd x = "\n    mov al, [r8]\n"
+  ++ "    cmp al, 0\n"
+  ++ "    jz .LOOP_" ++ y ++ "\n"
+  ++ ".LOOP_" ++ y ++ "_EXIT:\n"
+  where y = show x
+
 initial :: String
 initial = "section .text\n\
               \   global _start\n\n\
