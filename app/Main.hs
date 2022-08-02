@@ -19,7 +19,8 @@ output :: String
 output = "\n    mov rax, 1\n\
          \    mov rdi, 1\n\
          \    mov rsi, r8\n\
-         \    mov rdi, 1\n"
+         \    mov rdx, 1\n\
+         \    syscall\n"
 
 inc :: String
 inc = "\n    mov al, [r8]\n\
