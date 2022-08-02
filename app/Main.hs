@@ -44,25 +44,26 @@ dec = "\n    mov al, [r8]\n\
       \    dec al\n\
       \    mov [r8], al\n"
 
-moveright :: String
-moveright = "\n    inc r8\n"
+moveRight' :: String
+moveRight' = "\n    inc r8\n"
 
-moveleft :: String
-moveleft = "\n    dec r8\n"
+moveLeft' :: String
+moveLeft' = "\n    dec r8\n"
 
-resolveToken :: Char -> String
-resolveToken '+' = inc
-resolveToken '-' = dec
-resolveToken '>' = moveright
-resolveToken '<' = moveleft
-resolveToken '.' = output
-resolveToken x = [x]
-
-f :: Char -> String -> String
-f x y = resolveToken x ++ y
+generateAsm' :: String -> Int -> String -> String
+generateAsm' (x:xs) n acc = case x of
+  '+' -> generateAsm' xs n (acc ++ inc)
+  '-' -> generateAsm' xs n (acc ++ dec)
+  '>' -> generateAsm' xs n (acc ++ moveRight')
+  '<' -> generateAsm' xs n (acc ++ moveLeft')
+  '.' -> generateAsm' xs n (acc ++ output)
+  '[' -> generateAsm' xs (n + 1) (acc ++ loopStart n)
+  ']' -> generateAsm' xs (n - 1) (acc ++ loopEnd (n - 1))
+  _ -> generateAsm' xs n acc
+generateAsm' "" _ result = result
 
 generateAsm :: String -> String
-generateAsm input = initial ++ foldr f "" input ++ final
+generateAsm input = initial ++ generateAsm' input 0 "" ++ final
 
 main :: IO ()
-main = putStrLn $ generateAsm "+."
+main = putStrLn $ generateAsm "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++."
