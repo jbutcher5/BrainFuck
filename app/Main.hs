@@ -41,7 +41,7 @@ resolveToken '.' = output
 resolveToken x = [x]
 
 f :: Char -> String -> String
-f x y = y ++ resolveToken x
+f x y = resolveToken x ++ y
 
 generateAsm :: String -> String
 generateAsm input = initial ++ foldr f "" input ++ final
