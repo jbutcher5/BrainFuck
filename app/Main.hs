@@ -4,7 +4,9 @@ initial :: String
 initial = "section .text\n\
               \   global _start\n\n\
           \_start:\n\
-          \    mov r8, msg\n"
+          \    mov r8, msg\n\
+          \    mov al, 0\n\
+          \    mov [r8], al\n"
 
 final :: String
 final = "\nsection .bss\n\
