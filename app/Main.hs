@@ -58,7 +58,7 @@ generateAsm' (x:xs) n acc = case x of
   '<' -> generateAsm' xs n (acc ++ moveLeft')
   '.' -> generateAsm' xs n (acc ++ output)
   '[' -> generateAsm' xs (n + 1) (acc ++ loopStart n)
-  ']' -> generateAsm' xs (n - 1) (acc ++ loopEnd (n - 1))
+  ']' -> generateAsm' xs n (acc ++ loopEnd (n - 1))
   _ -> generateAsm' xs n acc
 generateAsm' "" _ result = result
 
