@@ -62,7 +62,7 @@ generateAsm' (_:xs) n stack acc = generateAsm' xs n stack acc
 generateAsm' "" _ _ result = result
 
 generateAsm :: String -> String
-generateAsm input = initial ++ generateAsm' input 0 [] ("" ++ final)
+generateAsm input = initial ++ generateAsm' input 0 [] "" ++ final
 
 main :: IO ()
 main = putStrLn . generateAsm $ ">++++++++[<+++++++++>-]<."
