@@ -1,6 +1,9 @@
 module Main where
 
 import Data.List (foldl')
+import System.Environment (getArgs)
+import Distribution.Simple.Utils (safeHead)
+
 import Lib
   ( inc
   , dec
@@ -42,15 +45,12 @@ generateAsm :: String -> String
 generateAsm input = initial ++ acc (foldl' generateAsm' defaultState input) ++ final
 
 main :: IO ()
-main = putStrLn . generateAsm $ ">++++++++[<+++++++++>-]<."
-  ++ ">++++[<+++++++>-]<+."
-  ++ "+++++++.."
-  ++ "+++."
-  ++ ">>++++++[<+++++++>-]<++."
-  ++ "------------."
-  ++ ">++++++[<+++++++++>-]<+."
-  ++ "<."
-  ++ "+++."
-  ++ "------."
-  ++ "--------."
-  ++ ">>>++++[<++++++++>-]<+."
+main = do
+  args <- getArgs
+
+  case safeHead args of
+    Just path -> do
+      content <- readFile path
+      putStrLn $ generateAsm content
+
+    Nothing -> putStrLn "An input file is required."
