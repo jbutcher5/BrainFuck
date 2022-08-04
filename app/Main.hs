@@ -2,6 +2,17 @@ module Main where
 
 import Data.List (foldl')
 import Lib
+  ( inc
+  , dec
+  , moveRight'
+  , moveLeft'
+  , output
+  , input
+  , initial
+  , final
+  , loopStart
+  , loopEnd
+  )
 
 data AsmState = AsmState
   { n :: Int
