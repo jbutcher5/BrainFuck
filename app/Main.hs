@@ -1,20 +1,30 @@
 module Main where
 
+import Data.List (foldl')
 import Lib
 
-generateAsm' :: String -> Int -> [Int] -> String -> String
-generateAsm' ('+':xs) n stack acc = generateAsm' xs n stack $ acc ++ inc
-generateAsm' ('-':xs) n stack acc = generateAsm' xs n stack $ acc ++ dec
-generateAsm' ('<':xs) n stack acc = generateAsm' xs n stack $ acc ++ moveLeft'
-generateAsm' ('>':xs) n stack acc = generateAsm' xs n stack $ acc ++ moveRight'
-generateAsm' ('.':xs) n stack acc = generateAsm' xs n stack $ acc ++ output
-generateAsm' ('[':xs) n stack acc = generateAsm' xs (n + 1) (stack ++ [n]) (acc ++ loopStart n)
-generateAsm' (']':xs) n (x:xs') acc = generateAsm' xs n xs' $ acc ++ loopEnd x
-generateAsm' (_:xs) n stack acc = generateAsm' xs n stack acc
-generateAsm' "" _ _ result = result
+data AsmState = AsmState
+  { n :: Int
+  , stack :: [Int]
+  , acc :: String
+  } deriving (Show, Eq)
+
+convert :: Char -> String
+convert '+' = inc
+convert '-' = dec
+convert '>' = moveRight'
+convert '<' = moveLeft'
+convert '.' = output
+convert _ = ""
+
+generateAsm' :: AsmState -> Char -> AsmState
+generateAsm' (AsmState n stack acc) instr = case instr of
+  '[' -> AsmState (n + 1) (stack ++ [n]) (acc ++ loopStart n)
+  ']' -> AsmState n (tail stack) (acc ++ loopEnd (head stack))
+  _ -> AsmState n stack (acc ++ convert instr)
 
 generateAsm :: String -> String
-generateAsm input = initial ++ generateAsm' input 0 [] "" ++ final
+generateAsm input = initial ++ (acc (foldl' generateAsm' (AsmState 0 [] "") input)) ++ final
 
 main :: IO ()
 main = putStrLn . generateAsm $ ">++++++++[<+++++++++>-]<."
