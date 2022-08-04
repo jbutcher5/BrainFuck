@@ -27,7 +27,7 @@ generateAsm' (AsmState n stack acc) instr = case instr of
   _ -> AsmState n stack (acc ++ convert instr)
 
 generateAsm :: String -> String
-generateAsm input = initial ++ (acc (foldl' generateAsm' defaultState input)) ++ final
+generateAsm input = initial ++ acc (foldl' generateAsm' defaultState input) ++ final
 
 main :: IO ()
 main = putStrLn . generateAsm $ ">++++++++[<+++++++++>-]<."
