@@ -17,6 +17,9 @@ convert '<' = moveLeft'
 convert '.' = output
 convert _ = ""
 
+defaultState :: AsmState
+defaultState = AsmState 0 [] ""
+
 generateAsm' :: AsmState -> Char -> AsmState
 generateAsm' (AsmState n stack acc) instr = case instr of
   '[' -> AsmState (n + 1) (stack ++ [n]) (acc ++ loopStart n)
@@ -24,7 +27,7 @@ generateAsm' (AsmState n stack acc) instr = case instr of
   _ -> AsmState n stack (acc ++ convert instr)
 
 generateAsm :: String -> String
-generateAsm input = initial ++ (acc (foldl' generateAsm' (AsmState 0 [] "") input)) ++ final
+generateAsm input = initial ++ (acc (foldl' generateAsm' defaultState input)) ++ final
 
 main :: IO ()
 main = putStrLn . generateAsm $ ">++++++++[<+++++++++>-]<."
