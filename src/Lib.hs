@@ -27,6 +27,13 @@ final = "\n    mov rax, 60\n"
   ++ "section .bss\n"
   ++ "    msg:    resb 1024"
 
+input :: String
+input = "\n    mov rax, 0\n"
+  ++ "    mov rdi, 0\n"
+  ++ "    mov rsi, r8\n"
+  ++ "    mov rdx, 1\n"
+  ++ "    syscall\n"
+
 output :: String
 output = "\n    mov rax, 1\n"
   ++ "    mov rdi, 1\n"

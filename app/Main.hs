@@ -15,6 +15,7 @@ convert '-' = dec
 convert '>' = moveRight'
 convert '<' = moveLeft'
 convert '.' = output
+convert ',' = input
 convert _ = ""
 
 defaultState :: AsmState
