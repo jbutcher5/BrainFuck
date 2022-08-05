@@ -5,17 +5,22 @@ import System.Environment (getArgs)
 import Distribution.Simple.Utils (safeHead)
 
 import Lib
-  ( inc
-  , dec
-  , moveRight'
-  , moveLeft'
-  , output
-  , input
+  ( offset
+  , move
+  , io
   , initial
   , final
   , loopStart
   , loopEnd
   )
+
+data Instr
+  = Move Int
+  | Offset Int
+  | IO Int
+  | LoopStart
+  | LoopEnd
+  | Void deriving (Show, Eq)
 
 data AsmState = AsmState
   { n :: Int
@@ -23,26 +28,42 @@ data AsmState = AsmState
   , acc :: String
   } deriving (Show, Eq)
 
-convert :: Char -> String
-convert '+' = inc
-convert '-' = dec
-convert '>' = moveRight'
-convert '<' = moveLeft'
-convert '.' = output
-convert ',' = input
+translate :: Char -> Instr
+translate '+' = Offset 1
+translate '-' = Offset (-1)
+translate '>' = Move 1
+translate '<' = Move (-1)
+translate '.' = IO 1
+translate ',' = IO 0
+translate '[' = LoopStart
+translate ']' = LoopEnd
+translate _ = Void
+
+mergeOperators :: [Instr] -> Instr -> [Instr]
+mergeOperators ((Offset y):rest) (Offset x) = Offset (y + x):rest
+mergeOperators ((Move y):rest) (Move x) = Move (y + x):rest
+mergeOperators acc x = x:acc
+
+mapInstructions :: String -> [Instr]
+mapInstructions input = foldl' mergeOperators [] (map translate input)
+
+convert :: Instr -> String
+convert (Offset x) = offset x
+convert (Move x) = move x
+convert (IO x) = io x
 convert _ = ""
 
 defaultState :: AsmState
 defaultState = AsmState 0 [] ""
 
-generateAsm' :: AsmState -> Char -> AsmState
+generateAsm' :: AsmState -> Instr -> AsmState
 generateAsm' (AsmState n stack acc) instr = case instr of
-  '[' -> AsmState (n + 1) (stack ++ [n]) (acc ++ loopStart n)
-  ']' -> AsmState n (tail stack) (acc ++ loopEnd (head stack))
+  LoopStart -> AsmState (n + 1) (stack ++ [n]) (acc ++ loopStart n)
+  LoopEnd -> AsmState n (tail stack) (acc ++ loopEnd (head stack))
   _ -> AsmState n stack (acc ++ convert instr)
 
 generateAsm :: String -> String
-generateAsm input = initial ++ acc (foldl' generateAsm' defaultState input) ++ final
+generateAsm input = initial ++ acc (foldl' generateAsm' defaultState (reverse (mapInstructions input))) ++ final
 
 main :: IO ()
 main = do
