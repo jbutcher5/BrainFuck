@@ -1,6 +1,6 @@
 cabal-version:      2.4
 name:               BrainFuck
-version:            0.1.1.0
+version:            0.2.0.0
 description:        A brainfuck compiler written in Haskell
 bug-reports:        https://github.com/KJ002/BrainFuck/issues
 license:            MIT
