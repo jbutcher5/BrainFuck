@@ -49,19 +49,5 @@ final = "\n\n    mov rax, 60\n"
   ++ "    msg:    resb 1024"
 
 composeAsm :: Show a => String -> a -> String
+composeAsm "" _ = ""
 composeAsm x y = "\n    " ++ x ++ " " ++ show y
-
-offset :: Int -> String
-offset = composeAsm "offset"
-
-io :: Int -> String
-io = composeAsm "io"
-
-move :: Int -> String
-move = composeAsm "move"
-
-loopStart :: Show a => a -> String
-loopStart = composeAsm "loop_start"
-
-loopEnd :: Show a => a -> String
-loopEnd = composeAsm "loop_end"
