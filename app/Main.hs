@@ -1,3 +1,5 @@
+{-# LANGUAGE LambdaCase #-}
+
 module Main where
 
 import Data.List (foldl')
@@ -29,15 +31,16 @@ data AsmState = AsmState
   } deriving (Show, Eq)
 
 translate :: Char -> Instr
-translate '+' = Offset 1
-translate '-' = Offset (-1)
-translate '>' = Move 1
-translate '<' = Move (-1)
-translate '.' = IO 1
-translate ',' = IO 0
-translate '[' = LoopStart
-translate ']' = LoopEnd
-translate _ = Void
+translate = \case
+  '+' -> Offset 1
+  '-' -> Offset $ -1
+  '>' -> Move 1
+  '<' -> Move $ -1
+  '.' -> IO 1
+  ',' -> IO 0
+  '[' -> LoopStart
+  ']' -> LoopEnd
+  _ -> Void
 
 mergeOperators :: [Instr] -> Instr -> [Instr]
 mergeOperators ((Offset y):rest) (Offset x) = Offset (y + x):rest
@@ -63,7 +66,7 @@ generateAsm' (AsmState n stack acc) instr = case instr of
   _ -> AsmState n stack (acc ++ convert instr)
 
 generateAsm :: String -> String
-generateAsm input = initial ++ acc (foldl' generateAsm' defaultState (reverse (mapInstructions input))) ++ final
+generateAsm input = acc $ foldl' generateAsm' defaultState $ reverse $ mapInstructions input
 
 main :: IO ()
 main = do
@@ -72,6 +75,6 @@ main = do
   case safeHead args of
     Just path -> do
       content <- readFile path
-      putStrLn $ generateAsm content
+      putStrLn $ initial ++ generateAsm content ++ final
 
     Nothing -> putStrLn "An input file is required."
