@@ -1,7 +1,7 @@
 module Lib where
 
 macros :: String
-macros = "\n%macro offset 1\n"
+macros = "%macro offset 1\n"
   ++ "    mov al, [r8]\n"
   ++ "    add al, %1\n"
   ++ "    mov [r8], al\n"
@@ -21,19 +21,19 @@ macros = "\n%macro offset 1\n"
   ++ "    syscall\n"
   ++ "%endmacro\n\n"
 
-loopStart :: Show a => a -> String
-loopStart x = "\n.LOOP_" ++ y ++ ":\n"
-  ++ "\n    mov al, [r8]\n"
+  ++ "%macro loop_start 1\n"
+  ++ ".LOOP_%1:"
+  ++ "    mov al, [r8]\n"
   ++ "    cmp al, 0\n"
-  ++ "    jz .LOOP_" ++ y ++ "_EXIT\n"
-  where y = show x
+  ++ "    jz .LOOP_%1_EXIT\n"
+  ++ "%endmacro\n\n"
 
-loopEnd :: Show a => a -> String
-loopEnd x = "\n    mov al, [r8]\n"
+  ++ "%macro loop_end 1\n"
+  ++ "    mov al, [r8]\n"
   ++ "    cmp al, 0\n"
-  ++ "    jnz .LOOP_" ++ y ++ "\n"
-  ++ "\n.LOOP_" ++ y ++ "_EXIT:\n"
-  where y = show x
+  ++ "    jnz .LOOP_%1\n"
+  ++ ".LOOP_%1_EXIT:\n"
+  ++ "%endmacro\n\n"
 
 initial :: String
 initial = macros ++ "section .text\n"
@@ -42,14 +42,14 @@ initial = macros ++ "section .text\n"
   ++ "    mov r8, msg\n"
 
 final :: String
-final = "\n    mov rax, 60\n"
+final = "\n\n    mov rax, 60\n"
   ++ "    mov rdi, 0\n"
   ++ "    syscall\n\n"
   ++ "section .bss\n"
   ++ "    msg:    resb 1024"
 
-composeAsm :: String -> Int -> String
-composeAsm x y = "\n    " ++ x ++ " " ++ show y ++ "\n"
+composeAsm :: Show a => String -> a -> String
+composeAsm x y = "\n    " ++ x ++ " " ++ show y
 
 offset :: Int -> String
 offset = composeAsm "offset"
@@ -59,3 +59,9 @@ io = composeAsm "io"
 
 move :: Int -> String
 move = composeAsm "move"
+
+loopStart :: Show a => a -> String
+loopStart = composeAsm "loop_start"
+
+loopEnd :: Show a => a -> String
+loopEnd = composeAsm "loop_end"
